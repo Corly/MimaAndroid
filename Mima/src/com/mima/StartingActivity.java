@@ -1,23 +1,24 @@
 package com.mima;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 public class StartingActivity extends Activity {
-	private Button allTogether;
-	private Button vsTeam;
+	private ImageButton allTogether;
+	private ImageButton vsTeam;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_starting);
 		
-		allTogether = (Button) findViewById(R.id.image_button_all_together);
-		vsTeam = (Button) findViewById(R.id.image_button_team_vs_team);
+		allTogether = (ImageButton) findViewById(R.id.image_button_all_together);
+		vsTeam = (ImageButton) findViewById(R.id.image_button_team_vs_team);
 		
 		allTogether.setOnClickListener(new OnClickListener() {
 		
@@ -32,6 +33,8 @@ public class StartingActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				//start activity for team vs team
+				Intent i = new Intent(getApplicationContext(), VsTeamActivity.class);
+				startActivity(i);
 			}
 		});
 	}
