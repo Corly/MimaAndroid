@@ -11,12 +11,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.util.Log;
+
 public class WordAPIGetter {
-	private String URL = "mima.andreiduma.ro/api/";
+	private String URL = "http://mima.andreiduma.ro/api/";
 	
 	public String getWord() throws ClientProtocolException, IOException {
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpResponse response = httpClient.execute(new HttpGet(URL));
+		Log.d("Debug", response.toString());
 		StatusLine statusLine = response.getStatusLine();
 		
 		if (statusLine.getStatusCode() == HttpStatus.SC_OK) {

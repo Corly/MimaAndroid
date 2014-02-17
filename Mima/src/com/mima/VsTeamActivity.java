@@ -1,25 +1,40 @@
 package com.mima;
 
+import java.io.IOException;
+
+import org.apache.http.client.ClientProtocolException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class VsTeamActivity extends Activity {
 	private Context context;
+	private WordAPIGetter wordGetter = new WordAPIGetter();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_vsteam);
 		context = this;
+		
+		if (!isNetworkConnected()) {
+			Log.d("Debug","Hello");
+			Toast.makeText(context, "Activate your internet data and try again", Toast.LENGTH_SHORT).show();
+			((Activity) context).finish();
+		}
 		
 		Button buttonPlusUnuTeam1 = (Button) findViewById(R.id.button_plusunu_team1);
 		final Button buttonMinusUnuTeam1 = (Button) findViewById(R.id.button_minusunu_team1);
@@ -96,10 +111,48 @@ public class VsTeamActivity extends Activity {
 		
 		setLongClickListeners(team1Label);
 		setLongClickListeners(team2Label);
+		
+		//get the word for mima
+		getWord();
+		
+		//set reset word button
+		ImageButton resetWord = (ImageButton) findViewById(R.id.image_button_new_word);
+		resetWord.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				getWord();
+			}
+		});
+	}
 	
+	private void getWord() {
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				final TextView mimicWord = (TextView) findViewById(R.id.text_view_word);
+				try {
+					final String word = wordGetter.getWord();
+					runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							mimicWord.setText(word);
+						}
+					});
+
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		thread.start();
 	}
 
-	public void setLongClickListeners(TextView textView) {
+	private void setLongClickListeners(TextView textView) {
 		final TextView aux = textView;
 		textView.setOnLongClickListener(new OnLongClickListener() {
 			
@@ -130,5 +183,10 @@ public class VsTeamActivity extends Activity {
 				return false;
 			}
 		});
+	}
+	
+	private boolean isNetworkConnected() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		return (cm.getActiveNetworkInfo() != null);
 	}
 }
